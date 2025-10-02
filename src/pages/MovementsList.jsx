@@ -1,9 +1,17 @@
-// src/pages/MovementsList.jsx
+
 import { useEffect, useState, useCallback } from 'react';
 import { listMovements } from '../services/movements';
 import { Link } from 'react-router-dom';
 import VehicleSelect from '../components/VehicleSelect';
 import { Button } from 'primereact/button';
+
+// Formateador determinista (evita mismatches por locale/zone)
+const fmtHN = new Intl.DateTimeFormat('es-HN', {
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit',
+  hour12: false,
+  timeZone: 'America/Tegucigalpa'
+});
 
 export default function MovementsList() {
   const [params, setParams] = useState({
@@ -22,7 +30,6 @@ export default function MovementsList() {
     pageSize: 10,
   });
 
-  // Función estable para cargar (evita warning react-hooks/exhaustive-deps)
   const load = useCallback(async () => {
     try {
       const p = { ...params };
@@ -116,18 +123,21 @@ export default function MovementsList() {
       {/* Lista */}
       <div className="surface-card border-round p-3">
         {data.items.length > 0 ? (
-          data.items.map((m) => (
-            <div key={m.id} className="py-2 border-bottom-1 surface-border">
-              <div className="flex justify-content-between">
-                <div>
-                  <strong>{m.type}</strong> — {new Date(m.dateTime).toLocaleString()}
-                  <div className="text-700">
-                    {m.vehicle?.plate} · {m.driverName} · {m.odometerKm} km
+          data.items.map((m) => {
+            const when = fmtHN.format(new Date(m.dateTime));
+            return (
+              <div key={m.id} className="py-2 border-bottom-1 surface-border">
+                <div className="flex justify-content-between">
+                  <div>
+                    <strong>{m.type}</strong> — {when}
+                    <div className="text-700">
+                      {m.vehicle?.plate} · {m.driverName} · {m.odometerKm} km
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p>No hay movimientos.</p>
         )}
