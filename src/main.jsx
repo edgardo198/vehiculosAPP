@@ -10,9 +10,7 @@ import 'primeflex/primeflex.css'
 import App from './App.jsx'
 
 const rootEl = document.getElementById('root')
-if (!rootEl) {
-  throw new Error('No se encontró el elemento #root en index.html')
-}
+if (!rootEl) throw new Error('No se encontró #root en index.html')
 
 createRoot(rootEl).render(
   <React.StrictMode>
